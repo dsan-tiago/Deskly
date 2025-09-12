@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Space {
+  id          String    @id @default(cuid())
+  name        String
+  capacity    Int
+  amenities   String[]  @default([])
+  priceHourly Int
+  images      String[]  @default([])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+}
+
+model Booking {
+  id         String   @id @default(cuid())
+  userEmail  String
+  spaceId    String
+  start      DateTime
+  end        DateTime
+  totalCents Int
+  createdAt  DateTime  @default(now())
+
+  space Space @relation(fields: [spaceId], references: [id])
+
+  @@index([spaceId, start, end])
+}
